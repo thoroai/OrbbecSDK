@@ -18,14 +18,15 @@ elseif(UNIX)
     set(ORBBEC_DLL_SUFFIX ".so")
 endif()
 
+message(STATUS "Configuring OrbbecSDK with target arch: ${ARK_TARGET_ARCHITECTURE}")
 # OrbbecSDK library
-set(OrbbecSDK_LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/${HOST_PLATFORM})
+set(OrbbecSDK_LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/${ARK_TARGET_ARCHITECTURE})
 set(OrbbecSDK_LIBRARY  ${OrbbecSDK_LIBS_DIR}/${ORBBEC_LIB_PREFIX}OrbbecSDK${ORBBEC_LIB_SUFFIX})
 set(OrbbecSDK_DLL ${OrbbecSDK_LIBS_DIR}/${ORBBEC_LIB_PREFIX}OrbbecSDK${ORBBEC_DLL_SUFFIX})
 set(OrbbecSDK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 set(OrbbecSDK_LIBS ${OrbbecSDK_LIBRARY})
 set(OrbbecSDK_FOUND TRUE)
-
+message(STATUS "OrbbecSDK_LIBS_DIR: ${OrbbecSDK_LIBS_DIR}")
 add_library(OrbbecSDK::OrbbecSDK SHARED IMPORTED GLOBAL)
 set_target_properties(OrbbecSDK::OrbbecSDK PROPERTIES
     IMPORTED_LOCATION ${OrbbecSDK_DLL}
@@ -34,79 +35,79 @@ set_target_properties(OrbbecSDK::OrbbecSDK PROPERTIES
 )
 
 # check if the project is being used directly or via add_subdirectory
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})  # project is used directly
-    # Set the C++ standard to C++ 11 and C standard to C11
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_C_STANDARD 11)
+# if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})  # project is used directly
+#     # Set the C++ standard to C++ 11 and C standard to C11
+#     set(CMAKE_CXX_STANDARD 11)
+#     set(CMAKE_C_STANDARD 11)
 
-    # Options
-    option(BUILD_EXAMPLES "Build examples" ON)
-    option(INSTALL_LIBUDEV "Install libudev" OFF)
+#     # Options
+#     option(BUILD_EXAMPLES "Build examples" ON)
+#     option(INSTALL_LIBUDEV "Install libudev" OFF)
 
-    # Compiler and Linker options
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O3")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -g")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
-    set(CMAKE_BUILD_TYPE "Release")
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
+#     # Compiler and Linker options
+#     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O3")
+#     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -g")
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
+#     set(CMAKE_BUILD_TYPE "Release")
+#     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
 
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+#     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(-Wall -Wextra -Wpedantic)
-    endif ()
+#     if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#         add_compile_options(-Wall -Wextra -Wpedantic)
+#     endif ()
 
-    # paths
-    set(ORBBEC_EXAMPLES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/examples/)
-    set(ORBBEC_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/doc/)
-    set(ORBBEC_MISC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/misc/)
-    set(ORBBEC_CONFIG_DIR ${ORBBEC_MISC_DIR}/config/)
-    set(ORBBEC_SCRIPT_DIR ${ORBBEC_MISC_DIR}/scripts/)
+#     # paths
+#     set(ORBBEC_EXAMPLES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/examples/)
+#     set(ORBBEC_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/doc/)
+#     set(ORBBEC_MISC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/misc/)
+#     set(ORBBEC_CONFIG_DIR ${ORBBEC_MISC_DIR}/config/)
+#     set(ORBBEC_SCRIPT_DIR ${ORBBEC_MISC_DIR}/scripts/)
 
-    # Subdirectories
-    if (BUILD_EXAMPLES)
-        add_subdirectory(examples)
-    endif ()
+#     # Subdirectories
+#     if (BUILD_EXAMPLES)
+#         add_subdirectory(examples)
+#     endif ()
 
-    # Installation of headers, configs, libs
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/InstallTargets.cmake)
+#     # Installation of headers, configs, libs
+#     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/InstallTargets.cmake)
 
-    # Package configuration
-    include(CMakePackageConfigHelpers)
+#     # Package configuration
+#     include(CMakePackageConfigHelpers)
 
-    configure_package_config_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/OrbbecSDKConfig.cmake.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfig.cmake"
-        INSTALL_DESTINATION lib/
-        PATH_VARS OrbbecSDK_INCLUDE_DIRS OrbbecSDK_LIBS_DIR
-    )
+#     configure_package_config_file(
+#         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/OrbbecSDKConfig.cmake.in"
+#         "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfig.cmake"
+#         INSTALL_DESTINATION lib/
+#         PATH_VARS OrbbecSDK_INCLUDE_DIRS OrbbecSDK_LIBS_DIR
+#     )
 
-    write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
-    )
+#     write_basic_package_version_file(
+#         "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfigVersion.cmake"
+#         VERSION ${PROJECT_VERSION}
+#         COMPATIBILITY AnyNewerVersion
+#     )
 
-    install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfig.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfigVersion.cmake"
-        DESTINATION lib/
-    )
-    # OrbbecSDK.pc.in
-    if((UNIX))
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/OrbbecSDK.pc.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDK.pc"
-        @ONLY
-    )
-    install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDK.pc"
-        DESTINATION lib/pkgconfig/
-    )
-    endif()
+#     install(FILES
+#         "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfig.cmake"
+#         "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDKConfigVersion.cmake"
+#         DESTINATION lib/
+#     )
+#     # OrbbecSDK.pc.in
+#     if((UNIX))
+#     configure_file(
+#         "${CMAKE_CURRENT_SOURCE_DIR}/OrbbecSDK.pc.in"
+#         "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDK.pc"
+#         @ONLY
+#     )
+#     install(FILES
+#         "${CMAKE_CURRENT_BINARY_DIR}/OrbbecSDK.pc"
+#         DESTINATION lib/pkgconfig/
+#     )
+#     endif()
 
-    # Uninstall target
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UninstallTarget.cmake)
-endif()
+#     # Uninstall target
+#     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UninstallTarget.cmake)
+# endif()
